@@ -2,8 +2,9 @@ import sys
 from io import BytesIO
 
 import requests
+
 from PIL import Image
-from utils import get_size
+from utils import get_size, get_pos
 
 if __name__ == '__main__':
 
@@ -24,18 +25,12 @@ if __name__ == '__main__':
 
     json_response = response.json()
 
-    toponym = json_response["response"]["GeoObjectCollection"][
-        "featureMember"][0]["GeoObject"]
-
-    toponym_coodrinates = toponym["Point"]["pos"]
-
-    toponym_longitude, toponym_lattitude = toponym_coodrinates.split(" ")
-
+    pos = get_pos(json_response)
     map_params = {
-        "ll": ",".join([toponym_longitude, toponym_lattitude]),
+        "ll": ",".join(pos),
         "spn": ",".join(get_size(json_response)),
         "l": "map",
-        "pt": f"{toponym_longitude},{toponym_lattitude},flag"
+        "pt": f"{pos[0]},{pos[1]},flag"
     }
 
     map_api_server = "http://static-maps.yandex.ru/1.x/"
